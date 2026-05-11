@@ -23,7 +23,7 @@ public class Bin {
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
     @JsonBackReference(value = "warehouse-inventory")
-+
+
     private Warehouse warehouse;
 
     @OneToMany(mappedBy = "bin")

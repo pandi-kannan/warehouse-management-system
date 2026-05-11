@@ -1,6 +1,7 @@
 package com.example.warehouse.service;
 
 import com.example.warehouse.entity.Product;
+import com.example.warehouse.exception.ResourceNotFoundException;
 import com.example.warehouse.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,24 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
+
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Product not found with id: " + id
+                        ));
+    }
+
+    public Product generateBarcode(Long id, String barcode) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Product not found with id: " + id
+                        ));
+
+        product.setBarcode(barcode);
+
+        return productRepository.save(product);
     }
 }

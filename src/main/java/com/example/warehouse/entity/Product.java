@@ -21,6 +21,8 @@ public class Product {
     private String sku;
     private String description;
     private Double price;
+    private String barcode;
+
 
     @OneToMany(mappedBy = "product")
     @JsonManagedReference(value = "product-inventory")

@@ -29,4 +29,13 @@ public class ProductController {
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+    @PutMapping("/{id}/barcode")
+    public ResponseEntity<Product> generateBarcode(
+            @PathVariable Long id,
+            @RequestParam String barcode) {
+
+        return ResponseEntity.ok(
+                productService.generateBarcode(id, barcode)
+        );
+    }
 }

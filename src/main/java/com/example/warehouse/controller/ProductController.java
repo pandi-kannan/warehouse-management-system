@@ -1,6 +1,7 @@
 package com.example.warehouse.controller;
 
 import com.example.warehouse.entity.Product;
+import com.example.warehouse.service.BarcodeService;
 import com.example.warehouse.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final BarcodeService barcodeService;
 
     @PostMapping
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
@@ -29,6 +31,7 @@ public class ProductController {
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+
     @PutMapping("/{id}/barcode")
     public ResponseEntity<Product> generateBarcode(
             @PathVariable Long id,
@@ -38,6 +41,7 @@ public class ProductController {
                 productService.generateBarcode(id, barcode)
         );
     }
+
     @GetMapping("/search")
     public List<Product> searchProductsByName(
             @RequestParam String name) {
@@ -50,5 +54,15 @@ public class ProductController {
             @RequestParam String sku) {
 
         return productService.searchBySku(sku);
+    }
+
+    @GetMapping("/barcode/{sku}")
+    public ResponseEntity<byte[]> getBarcode(@PathVariable String sku) {
+
+        byte[] image = barcodeService.generateBarcode(sku);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/png")
+                .body(image);
     }
 }

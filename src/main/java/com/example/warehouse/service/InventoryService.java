@@ -77,22 +77,23 @@ public class InventoryService {
         return inventoryRepository.save(inventory);
     }
     @Transactional
-    public Inventory dispatchStock(Long productId, Integer quantity) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    public Inventory dispatchStock(Long productId, Integer quantity) {
 
         Inventory inventory = inventoryRepository.findAll()
                 .stream()
                 .filter(inv -> inv.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Inventory not found for product"));
 
         if (inventory.getQuantity() < quantity) {
-            throw new InsufficientStockException("Insufficient stock available");        }
+            throw new InsufficientStockException("Insufficient stock available");
+        }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
 
         return inventoryRepository.save(inventory);
     }
+
 }

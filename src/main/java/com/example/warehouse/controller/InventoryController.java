@@ -1,12 +1,13 @@
 package com.example.warehouse.controller;
 
 import com.example.warehouse.dto.DispatchRequest;
+import com.example.warehouse.dto.ReceiveRequest;
 import com.example.warehouse.entity.Inventory;
 import com.example.warehouse.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.warehouse.dto.ReceiveRequest;
+
 import java.util.List;
 
 @RestController
@@ -25,10 +26,9 @@ public class InventoryController {
     public ResponseEntity<List<Inventory>> getAllInventory() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
     }
-    @PostMapping("/receive")
-    public ResponseEntity<Inventory> receiveStock(
-            @RequestBody ReceiveRequest request) {
 
+    @PostMapping("/receive")
+    public ResponseEntity<Inventory> receiveStock(@RequestBody ReceiveRequest request) {
         return ResponseEntity.ok(
                 inventoryService.receiveStock(
                         request.getProductId(),
@@ -36,10 +36,9 @@ public class InventoryController {
                 )
         );
     }
-    @PostMapping("/dispatch")
-    public ResponseEntity<Inventory> dispatchStock(
-            @RequestBody DispatchRequest request) {
 
+    @PostMapping("/dispatch")
+    public ResponseEntity<Inventory> dispatchStock(@RequestBody DispatchRequest request) {
         return ResponseEntity.ok(
                 inventoryService.dispatchStock(
                         request.getProductId(),
@@ -48,7 +47,7 @@ public class InventoryController {
         );
     }
     @GetMapping("/alerts")
-    public List<Inventory> getLowStockItems() {
-        return inventoryService.getLowStockItems();
+    public ResponseEntity<List<Inventory>> getLowStockItems() {
+        return ResponseEntity.ok(inventoryService.getLowStockItems());
     }
 }

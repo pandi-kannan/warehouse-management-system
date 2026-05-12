@@ -1,7 +1,7 @@
 package com.example.warehouse.service;
 
-import com.example.warehouse.exception.InsufficientStockException;
 import com.example.warehouse.entity.*;
+import com.example.warehouse.exception.InsufficientStockException;
 import com.example.warehouse.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,59 +25,44 @@ public class InventoryService {
     public List<Inventory> getAllInventory() {
         return inventoryRepository.findAll();
     }
-    public List<Inventory> getLowStockItems() {
 
-        return inventoryRepository.findAll()
-                .stream()
-                .filter(i -> i.getQuantity() < i.getReorderLevel())
-                .toList();
+    public List<Inventory> getLowStockItems() {
+        return inventoryRepository.findByQuantityLessThanReorderLevel();
     }
 
     @Transactional
     public Inventory receiveStock(Long productId, Integer quantity) {
 
-
         if (quantity <= 0) {
             throw new RuntimeException("Quantity must be greater than zero");
         }
 
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
 
         Bin bin = binRepository.findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No bins available"));
 
-
         Optional<Inventory> existingInventory =
                 inventoryRepository.findByProductAndBin(product, bin);
 
-
         if (existingInventory.isPresent()) {
-
             Inventory inventory = existingInventory.get();
-
-            inventory.setQuantity(
-                    inventory.getQuantity() + quantity
-            );
-
+            inventory.setQuantity(inventory.getQuantity() + quantity);
             return inventoryRepository.save(inventory);
         }
 
-
         Inventory inventory = new Inventory();
-
         inventory.setProduct(product);
         inventory.setBin(bin);
         inventory.setQuantity(quantity);
 
         return inventoryRepository.save(inventory);
     }
-    @Transactional
 
+    @Transactional
     public Inventory dispatchStock(Long productId, Integer quantity) {
 
         Inventory inventory = inventoryRepository.findAll()
@@ -95,5 +80,4 @@ public class InventoryService {
 
         return inventoryRepository.save(inventory);
     }
-
 }

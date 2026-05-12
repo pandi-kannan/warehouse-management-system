@@ -39,14 +39,16 @@ public class ProductController {
         );
     }
     @GetMapping("/search")
-    public List<Product> searchProducts(
+    public List<Product> searchProductsByName(
             @RequestParam String name) {
 
         return productService.searchByName(name);
     }
 
-    @GetMapping("/sku/{sku}")
-    public Product getBySku(@PathVariable String sku) {
+    @GetMapping("/sku")
+    public Product searchProductBySku(
+            @RequestParam String sku) {
+
         return productService.searchBySku(sku);
     }
 }

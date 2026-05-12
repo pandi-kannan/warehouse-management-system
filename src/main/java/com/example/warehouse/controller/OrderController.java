@@ -17,7 +17,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-
     @PostMapping
     public ResponseEntity<OrderEntity> createOrder(
             @RequestBody OrderRequest request) {
@@ -27,7 +26,6 @@ public class OrderController {
         );
     }
 
-
     @GetMapping
     public ResponseEntity<List<OrderEntity>> getAllOrders() {
 
@@ -36,8 +34,7 @@ public class OrderController {
         );
     }
 
-
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<OrderEntity> updateStatus(
             @PathVariable Long id,
             @RequestParam OrderStatus status) {

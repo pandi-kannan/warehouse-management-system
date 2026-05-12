@@ -47,4 +47,8 @@ public class InventoryController {
                 )
         );
     }
+    @GetMapping("/alerts")
+    public List<Inventory> getLowStockItems() {
+        return inventoryService.getLowStockItems();
+    }
 }

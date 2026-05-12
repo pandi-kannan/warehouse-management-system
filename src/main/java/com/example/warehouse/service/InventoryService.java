@@ -25,6 +25,13 @@ public class InventoryService {
     public List<Inventory> getAllInventory() {
         return inventoryRepository.findAll();
     }
+    public List<Inventory> getLowStockItems() {
+
+        return inventoryRepository.findAll()
+                .stream()
+                .filter(i -> i.getQuantity() < i.getReorderLevel())
+                .toList();
+    }
 
     @Transactional
     public Inventory receiveStock(Long productId, Integer quantity) {

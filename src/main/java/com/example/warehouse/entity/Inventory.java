@@ -26,4 +26,5 @@ public class Inventory {
     private Bin bin;
 
     private Integer quantity;
+    private Integer reorderLevel;
 }

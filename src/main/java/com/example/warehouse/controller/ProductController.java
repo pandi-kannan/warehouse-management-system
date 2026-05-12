@@ -38,4 +38,15 @@ public class ProductController {
                 productService.generateBarcode(id, barcode)
         );
     }
+    @GetMapping("/search")
+    public List<Product> searchProducts(
+            @RequestParam String name) {
+
+        return productService.searchByName(name);
+    }
+
+    @GetMapping("/sku/{sku}")
+    public Product getBySku(@PathVariable String sku) {
+        return productService.searchBySku(sku);
+    }
 }

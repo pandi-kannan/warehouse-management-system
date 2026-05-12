@@ -6,6 +6,7 @@ import com.example.warehouse.entity.Product;
 import com.example.warehouse.enums.OrderStatus;
 import com.example.warehouse.repository.OrderRepository;
 import com.example.warehouse.repository.ProductRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -64,4 +65,5 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
 }

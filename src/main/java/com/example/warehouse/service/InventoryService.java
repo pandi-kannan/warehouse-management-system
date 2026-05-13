@@ -27,7 +27,7 @@ public class InventoryService {
     }
 
     public List<Inventory> getLowStockItems() {
-        return inventoryRepository.findByQuantityLessThanReorderLevel();
+        return inventoryRepository.findLowStockItems();
     }
 
     @Transactional
@@ -65,7 +65,7 @@ public class InventoryService {
     @Transactional
     public Inventory dispatchStock(Long productId, Integer quantity) {
 
-        Inventory inventory = inventoryRepository.findAll()
+        Inventory inventory = inventoryRepository.findByProductId(productId)
                 .stream()
                 .filter(inv -> inv.getProduct().getId().equals(productId))
                 .findFirst()

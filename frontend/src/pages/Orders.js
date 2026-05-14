@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import API from '../services/Api';
+import { useAuth } from '../context/AuthContext';
 
 const STATUS_FLOW = ['PENDING', 'PICKING', 'PACKED', 'SHIPPED'];
 
 const STATUS_COLORS = {
     PENDING: { bg: '#f59e0b20', color: '#f59e0b' },
     PICKING: { bg: '#3b82f620', color: '#3b82f6' },
-    PACKED: { bg: '#8b5cf620', color: '#8b5cf6' },
+    PACKED:  { bg: '#8b5cf620', color: '#8b5cf6' },
     SHIPPED: { bg: '#10b98120', color: '#10b981' },
 };
 
 function Orders() {
+    const { isAdmin } = useAuth();
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -77,13 +79,16 @@ function Orders() {
                     <h1 style={styles.title}>Orders</h1>
                     <span style={styles.subtitle}>{orders.length} total orders</span>
                 </div>
-                <button style={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
-                    {showForm ? 'Cancel' : '+ New Order'}
-                </button>
+                {/* Only ADMIN can create orders */}
+                {isAdmin && (
+                    <button style={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+                        {showForm ? 'Cancel' : '+ New Order'}
+                    </button>
+                )}
             </div>
 
-            {/* Create Order Form */}
-            {showForm && (
+            {/* Create Order Form — ADMIN only */}
+            {showForm && isAdmin && (
                 <div style={styles.formCard}>
                     <h3 style={styles.formTitle}>Create New Order</h3>
                     {error && <div style={styles.errorMsg}>{error}</div>}
@@ -97,6 +102,13 @@ function Orders() {
                         <input style={styles.input} placeholder="Quantity *" type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} />
                     </div>
                     <button style={styles.btnPrimary} onClick={handleCreate}>Create Order</button>
+                </div>
+            )}
+
+            {/* Operator notice */}
+            {!isAdmin && (
+                <div style={styles.infoMsg}>
+                    🛒 You can process orders (Picking → Packed → Shipped). Only Admin can create new orders.
                 </div>
             )}
 
@@ -177,6 +189,7 @@ const styles = {
     loading: { color: '#64748b', textAlign: 'center', marginTop: 60 },
     empty: { color: '#64748b', textAlign: 'center', padding: 40 },
     errorMsg: { background: '#ef444420', color: '#ef4444', padding: '8px 14px', borderRadius: 8, marginBottom: 12, fontSize: 13 },
+    infoMsg: { background: '#3b82f620', color: '#3b82f6', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13, fontWeight: 500 },
 };
 
 export default Orders;

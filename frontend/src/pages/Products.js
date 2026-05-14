@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import API from '../services/Api';
+import { useAuth } from '../context/AuthContext';
 
 function Products() {
+    const { isAdmin } = useAuth();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -56,13 +58,16 @@ function Products() {
                     <h1 style={styles.title}>Products</h1>
                     <span style={styles.subtitle}>{products.length} products total</span>
                 </div>
-                <button style={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
-                    {showForm ? 'Cancel' : '+ Add Product'}
-                </button>
+                {/* Only ADMIN can add products */}
+                {isAdmin && (
+                    <button style={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+                        {showForm ? 'Cancel' : '+ Add Product'}
+                    </button>
+                )}
             </div>
 
-            {/* Add Product Form */}
-            {showForm && (
+            {/* Add Product Form — ADMIN only */}
+            {showForm && isAdmin && (
                 <div style={styles.formCard}>
                     <h3 style={styles.formTitle}>New Product</h3>
                     {error && <div style={styles.errorMsg}>{error}</div>}
@@ -92,6 +97,13 @@ function Products() {
                         <img src={barcodeImg} alt="barcode" style={{ width: '100%', borderRadius: 8 }} />
                         <button style={{ ...styles.btnPrimary, marginTop: 16 }} onClick={() => setBarcodeImg(null)}>Close</button>
                     </div>
+                </div>
+            )}
+
+            {/* Operator notice */}
+            {!isAdmin && (
+                <div style={styles.infoMsg}>
+                    👁️ View only — contact Admin to add or modify products.
                 </div>
             )}
 
@@ -145,6 +157,7 @@ const styles = {
     loading: { color: '#64748b', textAlign: 'center', marginTop: 60 },
     empty: { color: '#64748b', textAlign: 'center', padding: 40 },
     errorMsg: { background: '#ef444420', color: '#ef4444', padding: '8px 14px', borderRadius: 8, marginBottom: 12, fontSize: 13 },
+    infoMsg: { background: '#3b82f620', color: '#3b82f6', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13, fontWeight: 500 },
     modal: { position: 'fixed', inset: 0, background: '#00000088', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
     modalBox: { background: '#1e293b', borderRadius: 12, padding: 28, width: 360 },
 };

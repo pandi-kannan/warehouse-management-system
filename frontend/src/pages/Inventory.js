@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import API from '../services/Api';
+import { useAuth } from '../context/AuthContext';
 
 function Inventory() {
+    const { isAdmin } = useAuth();
     const [inventory, setInventory] = useState([]);
     const [products, setProducts] = useState([]);
     const [bins, setBins] = useState([]);
@@ -72,8 +74,8 @@ function Inventory() {
     const lowStock = inventory.filter(i => i.quantity < 10);
 
     const getProductName = (item) => item.product?.name || '—';
-    const getBinCode = (item) => item.bin?.binCode || '—';
-    const getWarehouse = (item) => item.bin?.warehouse?.name || '—';
+    const getBinCode    = (item) => item.bin?.binCode || '—';
+    const getWarehouse  = (item) => item.bin?.warehouse?.name || '—';
 
     return (
         <div>
@@ -87,11 +89,11 @@ function Inventory() {
                 )}
             </div>
 
-            {/* Tabs */}
+            {/* Tabs — both roles can access all tabs */}
             <div style={styles.tabs}>
                 {[
-                    { key: 'all', label: '📋 All Stock' },
-                    { key: 'receive', label: '📥 Receive Stock' },
+                    { key: 'all',      label: '📋 All Stock' },
+                    { key: 'receive',  label: '📥 Receive Stock' },
                     { key: 'dispatch', label: '📤 Dispatch Stock' },
                 ].map(tab => (
                     <button

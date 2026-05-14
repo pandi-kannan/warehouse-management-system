@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-
-function getRole() {
-    try {
-        const token = localStorage.getItem('token');
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.role;
-    } catch { return null; }
-}
-
-function getUsername() {
-    try {
-        const token = localStorage.getItem('token');
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.sub;
-    } catch { return 'User'; }
-}
+import { useAuth } from '../context/AuthContext';
 
 function Layout() {
     const navigate = useNavigate();
-    const role = getRole();
-    const username = getUsername();
+    const { user, isAdmin } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const handleLogout = () => {
@@ -29,15 +13,15 @@ function Layout() {
     };
 
     const navItems = [
-        { path: '/dashboard', label: 'Dashboard', icon: '📊', roles: ['ADMIN', 'OPERATOR'] },
-        { path: '/products', label: 'Products', icon: '📦', roles: ['ADMIN', 'OPERATOR'] },
-        { path: '/inventory', label: 'Inventory', icon: '🏷️', roles: ['ADMIN', 'OPERATOR'] },
-        { path: '/orders', label: 'Orders', icon: '🛒', roles: ['ADMIN', 'OPERATOR'] },
-        { path: '/warehouses', label: 'Warehouses', icon: '🏭', roles: ['ADMIN'] },
-        { path: '/bins', label: 'Bins', icon: '🗄️', roles: ['ADMIN'] },
+        { path: '/dashboard',   label: 'Dashboard',  icon: '📊', roles: ['ADMIN', 'OPERATOR'] },
+        { path: '/products',    label: 'Products',   icon: '📦', roles: ['ADMIN', 'OPERATOR'] },
+        { path: '/inventory',   label: 'Inventory',  icon: '🏷️', roles: ['ADMIN', 'OPERATOR'] },
+        { path: '/orders',      label: 'Orders',     icon: '🛒', roles: ['ADMIN', 'OPERATOR'] },
+        { path: '/warehouses',  label: 'Warehouses', icon: '🏭', roles: ['ADMIN'] },
+        { path: '/bins',        label: 'Bins',       icon: '🗄️', roles: ['ADMIN'] },
     ];
 
-    const visibleItems = navItems.filter(item => item.roles.includes(role));
+    const visibleItems = navItems.filter(item => item.roles.includes(user.role));
 
     return (
         <div style={styles.shell}>
@@ -69,10 +53,10 @@ function Layout() {
                 <div style={styles.sidebarFooter}>
                     {sidebarOpen && (
                         <div style={styles.userInfo}>
-                            <div style={styles.avatar}>{username[0]?.toUpperCase()}</div>
+                            <div style={styles.avatar}>{user.username[0]?.toUpperCase()}</div>
                             <div>
-                                <div style={styles.userName}>{username}</div>
-                                <div style={styles.userRole}>{role}</div>
+                                <div style={styles.userName}>{user.username}</div>
+                                <div style={styles.userRole}>{user.role}</div>
                             </div>
                         </div>
                     )}

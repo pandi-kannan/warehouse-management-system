@@ -1,6 +1,6 @@
 package com.example.warehouse.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +23,7 @@ public class Product {
     private Double price;
     private String barcode;
 
-
     @OneToMany(mappedBy = "product")
-    @JsonManagedReference(value = "product-inventory")
+    @JsonIgnoreProperties({"product"})
     private List<Inventory> inventories;
 }

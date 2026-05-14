@@ -32,7 +32,8 @@ public class InventoryController {
         return ResponseEntity.ok(
                 inventoryService.receiveStock(
                         request.getProductId(),
-                        request.getQuantity()
+                        request.getQuantity(),
+                        request.getBinId()   // ← pass selected bin
                 )
         );
     }
@@ -46,6 +47,7 @@ public class InventoryController {
                 )
         );
     }
+
     @GetMapping("/alerts")
     public ResponseEntity<List<Inventory>> getLowStockItems() {
         return ResponseEntity.ok(inventoryService.getLowStockItems());

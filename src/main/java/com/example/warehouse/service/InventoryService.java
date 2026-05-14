@@ -31,7 +31,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public Inventory receiveStock(Long productId, Integer quantity) {
+    public Inventory receiveStock(Long productId, Integer quantity, Long binId) {
 
         if (quantity <= 0) {
             throw new RuntimeException("Quantity must be greater than zero");
@@ -40,11 +40,19 @@ public class InventoryService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        Bin bin = binRepository.findAll()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No bins available"));
+        // Use selected bin if provided, otherwise fall back to first bin
+        Bin bin;
+        if (binId != null) {
+            bin = binRepository.findById(binId)
+                    .orElseThrow(() -> new RuntimeException("Bin not found"));
+        } else {
+            bin = binRepository.findAll()
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No bins available"));
+        }
 
+        // Check if this product already exists in this specific bin
         Optional<Inventory> existingInventory =
                 inventoryRepository.findByProductAndBin(product, bin);
 
@@ -54,6 +62,7 @@ public class InventoryService {
             return inventoryRepository.save(inventory);
         }
 
+        // Create new inventory record for this product in this bin
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
         inventory.setBin(bin);

@@ -1,6 +1,6 @@
 package com.example.warehouse.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,14 +15,14 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
-    @JsonBackReference(value = "product-inventory")
+    @JsonIgnoreProperties({"inventories"})
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bin_id")
-    @JsonBackReference
+    @JsonIgnoreProperties({"inventories"})
     private Bin bin;
 
     private Integer quantity;

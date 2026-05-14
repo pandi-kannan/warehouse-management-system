@@ -1,6 +1,6 @@
 package com.example.warehouse.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,8 +22,7 @@ public class Bin {
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
-    @JsonBackReference(value = "warehouse-inventory")
-
+    @JsonIgnoreProperties({"bins", "inventories"})
     private Warehouse warehouse;
 
     @OneToMany(mappedBy = "bin")

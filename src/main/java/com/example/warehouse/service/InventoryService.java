@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +39,6 @@ public class InventoryService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Use selected bin if provided, otherwise fall back to first bin
         Bin bin;
         if (binId != null) {
             bin = binRepository.findById(binId)
@@ -52,17 +50,15 @@ public class InventoryService {
                     .orElseThrow(() -> new RuntimeException("No bins available"));
         }
 
-        // Check if this product already exists in this specific bin
-        Optional<Inventory> existingInventory =
+        List<Inventory> existingInventory =
                 inventoryRepository.findByProductAndBin(product, bin);
 
-        if (existingInventory.isPresent()) {
-            Inventory inventory = existingInventory.get();
+        if (!existingInventory.isEmpty()) {                      // ← fix 1: was isEmpty()
+            Inventory inventory = existingInventory.get(0);     // ← fix 2: was get()
             inventory.setQuantity(inventory.getQuantity() + quantity);
             return inventoryRepository.save(inventory);
         }
 
-        // Create new inventory record for this product in this bin
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
         inventory.setBin(bin);
@@ -74,19 +70,38 @@ public class InventoryService {
     @Transactional
     public Inventory dispatchStock(Long productId, Integer quantity) {
 
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-                .stream()
-                .filter(inv -> inv.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new RuntimeException("Inventory not found for product"));
+        List<Inventory> inventoryList = inventoryRepository.findByProductId(productId);
 
-        if (inventory.getQuantity() < quantity) {
-            throw new InsufficientStockException("Insufficient stock available");
+        if (inventoryList.isEmpty()) {
+            throw new RuntimeException("No inventory found for this product");
         }
 
-        inventory.setQuantity(inventory.getQuantity() - quantity);
+        int totalAvailable = inventoryList.stream()
+                .mapToInt(Inventory::getQuantity)
+                .sum();
 
-        return inventoryRepository.save(inventory);
+        if (totalAvailable < quantity) {
+            throw new InsufficientStockException(
+                    "Insufficient stock! Available: " + totalAvailable +
+                            ", Required: " + quantity
+            );
+        }
+
+        int remaining = quantity;
+
+        for (Inventory inventory : inventoryList) {
+            if (remaining <= 0) break;
+
+            if (inventory.getQuantity() >= remaining) {
+                inventory.setQuantity(inventory.getQuantity() - remaining);
+                remaining = 0;
+            } else {
+                remaining -= inventory.getQuantity();
+                inventory.setQuantity(0);
+            }
+            inventoryRepository.save(inventory);
+        }
+
+        return inventoryList.get(0);
     }
 }

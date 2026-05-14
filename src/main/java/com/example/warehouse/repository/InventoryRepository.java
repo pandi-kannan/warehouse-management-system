@@ -13,11 +13,10 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
-    Optional<Inventory> findByProductAndBin(Product product, Bin bin);
-    List<Inventory> findByQuantityLessThan(Integer reorderLevel);
-    @Query("SELECT i FROM Inventory i WHERE i.quantity < i.reorderLevel")
+    List<Inventory> findByProductAndBin(Product product, Bin bin);
 
+    @Query("SELECT i FROM Inventory i WHERE i.quantity = 0")
     List<Inventory> findLowStockItems();
 
-    Optional<Inventory> findByProductId(Long productId);
+    List<Inventory> findByProductId(Long productId);
 }

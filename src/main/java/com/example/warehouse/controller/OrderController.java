@@ -7,6 +7,7 @@ import com.example.warehouse.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('OPERATOR')")
     public ResponseEntity<OrderEntity> updateStatus(
             @PathVariable Long id,
             @RequestParam OrderStatus status) {

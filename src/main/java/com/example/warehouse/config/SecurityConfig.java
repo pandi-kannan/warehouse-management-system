@@ -36,34 +36,25 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public endpoints
+
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ── PRODUCTS ──────────────────────────────────────────
-                        // GET: both roles can view
+
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("ADMIN", "OPERATOR")
-                        // POST / PUT / DELETE: ADMIN only
                         .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
-                        // ── ORDERS ────────────────────────────────────────────
-                        // GET + PUT status: both roles
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "OPERATOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("ADMIN", "OPERATOR")
-                        // POST (create order): ADMIN only
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole( "OPERATOR")
                         .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("ADMIN")
 
-                        // ── INVENTORY ─────────────────────────────────────────
-                        // Both roles can receive, dispatch, view
                         .requestMatchers("/api/inventory/**").hasAnyRole("ADMIN", "OPERATOR")
 
-                        // ── DASHBOARD ─────────────────────────────────────────
                         .requestMatchers("/api/dashboard/**").hasAnyRole("ADMIN", "OPERATOR")
 
-                        // ── WAREHOUSES & BINS ─────────────────────────────────
-                        // ADMIN only
+
                         .requestMatchers("/api/warehouses/**").hasRole("ADMIN")
                         .requestMatchers("/api/bins/**").hasRole("ADMIN")
 
